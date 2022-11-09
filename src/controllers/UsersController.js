@@ -61,18 +61,20 @@ class UsersController {
       }
       user.password = await hash(password, 8);
     }
-
-    await database.run(
-      `UPDATE users SET
-      name = (?),
-      email = (?),
-      password = (?),
-      updated_at = DATETIME('now')
-      WHERE id = (?)`,
-      [user.name, user.email, user.password, user_id]
-    );
-
-    return response.json();
+    try {
+      await database.run(
+        `UPDATE users SET
+    name = (?),
+    email = (?),
+    password = (?),
+    updated_at = DATETIME('now')
+    WHERE id = (?)`,
+        [user.name, user.email, user.password, user_id]
+      );
+      return response.json();
+    } catch {
+      throw new AppError("Erro ao tentar atualizar");
+    }
   }
 }
 
